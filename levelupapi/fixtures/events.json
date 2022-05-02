@@ -1,0 +1,25 @@
+[
+    {
+        "model": "levelupapi.event",
+        "pk": 1,
+        "fields": {
+            "game": 1,
+            "description": "Let's play some classic Monopoly",
+            "date": "2022-05-02",
+            "time": "3:00",
+            "organizer": 1
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 2,
+        "fields": {
+            "game": 2,
+            "description": "Let's play a game of charades!",
+            "date": "2022-05-01",
+            "time": "4:00",
+            "organizer": 1
+        }
+    }
+   
+]
