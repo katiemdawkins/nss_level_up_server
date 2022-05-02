@@ -1,0 +1,26 @@
+[
+    {
+        "model": "levelupapi.games",
+        "pk": 1,
+        "fields": {
+            "game_type": 1,
+            "title": "Monopoly",
+            "maker": "Matel",
+            "gamer": 1,
+            "number_of_players": 4,
+            "skill_level": 2
+        }
+    },
+    {
+        "model": "levelupapi.games",
+        "pk": 2,
+        "fields": {
+            "game_type": 2,
+            "title": "Charades",
+            "maker": "My Brain",
+            "gamer": 1,
+            "number_of_players": 2,
+            "skill_level": 2
+        }
+    }
+]
