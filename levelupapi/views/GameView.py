@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from levelupapi.models import game
 from levelupapi.models.game import Game
+from levelupapi.models.game_type import GameType
+from levelupapi.models.gamer import Gamer
+from django.core.exceptions import ValidationError
 
 
 class GameView(ViewSet):
@@ -16,9 +19,12 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized game type
         """
-        game = Game.objects.get(pk=pk)
-        serializer = GameSerializer(game)
-        return Response(serializer.data)
+        try:
+            game = Game.objects.get(pk=pk)
+            serializer = GameSerializer(game)
+            return Response(serializer.data)
+        except Game.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
         
 
     def list(self, request):
@@ -35,6 +41,18 @@ class GameView(ViewSet):
     
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
+    
+    def create(self, request):
+        """Handle POST operations
+
+        Returns:
+            Response -- JSON serialized game instance
+        """
+        gamer = Gamer.objects.get(user=request.auth.user)
+        serializer = CreateGameSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(gamer=gamer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
@@ -42,3 +60,9 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ('id', 'game_type', "title", "maker", "gamer", "number_of_players", "skill_level")
+        depth = 1
+        
+class CreateGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = ['id', 'title', 'maker', 'number_of_players', 'skill_level', 'game_type']

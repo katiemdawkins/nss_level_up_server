@@ -1,6 +1,6 @@
 from django.db import models
 
-
+#inheritance Event is inheriting properties of models.Model
 class Event(models.Model):
     game = models.ForeignKey("Game", on_delete=models.CASCADE)
     description = models.CharField(max_length=90)
