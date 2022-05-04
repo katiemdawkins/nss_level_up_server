@@ -50,8 +50,7 @@ class EventView(ViewSet):
         game = Game.objects.get(pk=request.data["game"])
         serializer = CreateEventSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(organizer=organizer)
-        serializer.save(game=game)
+        serializer.save(organizer=organizer, game=game)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         # event = Event.objects.create(
@@ -63,15 +62,41 @@ class EventView(ViewSet):
         # )
         # serializer= EventSerializer(event)
         # return Response(serializer.data)
+        
+    def update(self, request, pk):
+        """Handle PUT requests for a game
+
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        event = Event.objects.get(pk=pk)
+        serializer = CreateEventSerializer(event, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        
+        # event.description = request.data["description"]
+        # event.date = request.data["date"]
+        # event.time = request.data["time"]
+
+        # game = Game.objects.get(pk=request.data["game"])
+        # event.game = game
+        # organizer = Gamer.objects.get(user=request.auth.user)
+        # event.organizer = organizer
+        # event.save()
+
+        # return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
     """
     class Meta:
         model = Event
-        fields = ('id', 'game', "description", "date", "time", "organizer")
+        fields = '__all__'
         depth = 1
-        
+   #can do __all__ here on event serializer, cant do it below bc we
+   #are trying to verify data
+      
 class CreateEventSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
     """
