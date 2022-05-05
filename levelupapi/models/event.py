@@ -7,6 +7,7 @@ class Event(models.Model):
     date = models.DateField(auto_now=True)
     time = models.TimeField(auto_now=True)
     organizer = models.ForeignKey("Gamer", on_delete=models.CASCADE)
+    attendees = models.ManyToManyField('Gamer', through='EventGamer', related_name='events')
     
     #on delete - if the organizer gets deleted, this event will also get deleted
     #if this game gets deleted, then this event will be deleted too

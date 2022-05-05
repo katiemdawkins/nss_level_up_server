@@ -1,4 +1,5 @@
 """View module for handling requests about game types"""
+from multiprocessing import Event
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -77,7 +78,12 @@ class GameView(ViewSet):
         # game.save()
 
         # return Response(None, status=status.HTTP_204_NO_CONTENT)
-
+    def destroy(self, request, pk):
+        game = Game.objects.get(pk=pk)
+        game.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    
 
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for game types

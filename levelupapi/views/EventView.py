@@ -7,6 +7,7 @@ from levelupapi.models import Event, event
 from levelupapi.models.gamer import Gamer
 from levelupapi.models.game import Game
 from django.core.exceptions import ValidationError
+from rest_framework.decorators import action
 
 class EventView(ViewSet):
     """Level up game types view"""
@@ -18,6 +19,8 @@ class EventView(ViewSet):
             Response -- JSON serialized game type
         """
         try:
+            #pk = pk left side is the key you want to match from song
+            #right side is the side you pass through and ask for
             event = Event.objects.get(pk=pk)
             serializer = EventSerializer(event)
             return Response(serializer.data)
@@ -36,7 +39,7 @@ class EventView(ViewSet):
         game = request.query_params.get('game', None)
         if game is not None:
             events = events.filter(game_id = game)
-        
+        #many =True means we want many fields back, default is false
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
     
@@ -86,7 +89,30 @@ class EventView(ViewSet):
         # event.save()
 
         # return Response(None, status=status.HTTP_204_NO_CONTENT)
+    def destroy(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        event.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    @action(methods=['post'], detail=True)
+    def signup(self, request, pk):
+        """Post request for a user to sign up for an event"""
 
+        gamer = Gamer.objects.get(user=request.auth.user)
+        event = Event.objects.get(pk=pk)
+        event.attendees.add(gamer)
+        return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['delete'], detail=True)
+    def leave(self, request, pk):
+        """Post request for a user to sign up for an event"""
+
+        gamer = Gamer.objects.get(user=request.auth.user)
+        event = Event.objects.get(pk=pk)
+        event.attendees.remove(gamer)
+        return Response({'message': 'Gamer removed'}, status=status.HTTP_204_NO_CONTENT)   
+    
+#Serializer -> taking data from Django and turning it into something we can use       
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
     """
