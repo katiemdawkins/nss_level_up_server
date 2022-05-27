@@ -36,6 +36,10 @@ class GameView(ViewSet):
         """
         games = Game.objects.all()
         
+        #'type' argument, if you do a fetch call, it needs to match the query parameter
+        #kind of like useParams in front end
+        #type is what the url is sending in 
+        #we make the rules. we chose the work type 
         game_type = request.query_params.get('type', None)
         if game_type is not None:
             games = games.filter(game_type_id=game_type)
@@ -50,8 +54,12 @@ class GameView(ViewSet):
             Response -- JSON serialized game instance
         """
         gamer = Gamer.objects.get(user=request.auth.user)
+        #make and instance of it
         serializer = CreateGameSerializer(data=request.data)
+        #raise exception=True - this field is required
+        #more verbose
         serializer.is_valid(raise_exception=True)
+        #gamer=gamer is checking that it's getting an integer id
         serializer.save(gamer=gamer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
@@ -66,6 +74,9 @@ class GameView(ViewSet):
         serializer = CreateGameSerializer(game, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        #return None ? you have to return something
+        #saying none bc nothing is coming back
+        #but we get the status code to know it works
         return Response(None, status=status.HTTP_204_NO_CONTENT)
         
         # game.title = request.data["title"]
@@ -90,10 +101,12 @@ class GameSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Game
-        fields = ('id', 'game_type', "title", "maker", "gamer", "number_of_players", "skill_level")
+        fields = ('id', "gamer", "title", "maker", "number_of_players", "skill_level", 'game_type')
         depth = 1
         
+#for the create method fields include
+#anything the client will send up
 class CreateGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
-        fields = ['id', 'title', 'maker', 'number_of_players', 'skill_level', 'game_type']
+        fields = ('id', 'title', 'maker', 'number_of_players', 'skill_level', 'game_type')

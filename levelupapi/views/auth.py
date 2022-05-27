@@ -7,8 +7,10 @@ from rest_framework.response import Response
 
 from levelupapi.models import Gamer
 
+#a hat we put on the method that says this is true for this method
+#these are decorators to the method it's a POST, this login_user method is a post 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) #allow any, login without 
 def login_user(request):
     '''Handles the authentication of a gamer
 

@@ -9,6 +9,8 @@ from levelupapi.models.game import Game
 from django.core.exceptions import ValidationError
 from rest_framework.decorators import action
 
+#inheriting ViewSet- it uses retrieve, and list, etc. 
+#we are overwriting the retrieve method to do whatever we want
 class EventView(ViewSet):
     """Level up game types view"""
 
@@ -59,7 +61,9 @@ class EventView(ViewSet):
         game = Game.objects.get(pk=request.data["game"])
         serializer = CreateEventSerializer(data=request.data)
         #raise exception -> tells user what they are sending is invalid
+        #we don't want bad data coming into the database ever
         serializer.is_valid(raise_exception=True)
+        #save is a built in method 
         serializer.save(organizer=organizer, game=game)
         #if you were adding attendee at the same time as create you'd do it like below
         #if you're adding multiple things at once, like playlist in collab example
@@ -84,6 +88,7 @@ class EventView(ViewSet):
             Response -- Empty body with 204 status code
         """
         event = Event.objects.get(pk=pk)
+        #serializer creates and saves the instance of event
         serializer = CreateEventSerializer(event, data=request.data)
         #raise exception -> tells user what they are sending is invalid
         serializer.is_valid(raise_exception=True)
@@ -115,6 +120,8 @@ class EventView(ViewSet):
 
         gamer = Gamer.objects.get(user=request.auth.user)
         event = Event.objects.get(pk=pk)
+        #when you do ADD - we are altering and saving to the database
+        #these get and add are kind of like sub queries, getting and changing things in database 
         event.attendees.add(gamer)
         return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
     
@@ -127,7 +134,9 @@ class EventView(ViewSet):
         event.attendees.remove(gamer)
         return Response({'message': 'Gamer removed'}, status=status.HTTP_204_NO_CONTENT)   
     
-#Serializer -> taking data from Django and turning it into something we can use       
+#Serializer -> taking data from Django and turning it into something we can use 
+#the data in serializer is like a dictionary   
+#a Serializer is a TRANSLATER - what a want and how I want to see it    
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
     """
@@ -139,7 +148,9 @@ class EventSerializer(serializers.ModelSerializer):
    #are trying to verify data
    
     #SERIALIZERS - this is what i want back, this is how I want it
-    #you can put in or leave out whatever you want to see. very cool  
+    #you can put in or leave out whatever you want to see. very cool 
+ 
+ #this is based on event model and checks to make sure the user input is valid    
 class CreateEventSerializer(serializers.ModelSerializer):
     """JSON serializer for game types
     """

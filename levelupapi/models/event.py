@@ -9,10 +9,13 @@ class Event(models.Model):
     organizer = models.ForeignKey("Gamer", on_delete=models.CASCADE)
     attendees = models.ManyToManyField('Gamer', through='EventGamer', related_name='events')
     
+    #saying joined is a property, this is the get | @property we put on a get
     @property
     def joined(self):
         return self.__joined
+    #__ 
 
+    #this calculates what joined is and sets it
     @joined.setter
     def joined(self, value):
         self.__joined = value
